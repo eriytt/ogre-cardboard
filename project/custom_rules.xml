@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <property name="resource.absolute.dir" location="res.generated" />
+
+  <target name="unpack-aar">
+    <dirname file="${aarfile}" property="aarpath"/>
+    <unzip src="${aarfile}" dest="${aarpath}"/>
+  </target>
+  
+  <target name="-pre-build">
+    <mkdir dir="${resource.absolute.dir}"/>
+
+    <antcall target="unpack-aar">
+      <param name="aarfile" value="${gvr.sdk}/libraries/common/common.aar"/>
+    </antcall>
+    <copy todir="${resource.absolute.dir}">
+      <fileset dir="${gvr.sdk}/libraries/common/res"/>
+    </copy>
+    <copy file="${gvr.sdk}/libraries/common/classes.jar" tofile="${jar.libs.dir}/common.jar"/>
+    
+    <copy  todir="${resource.absolute.dir}">
+      <fileset dir="res"/>
+    </copy>
+  </target>
+
+  <target name="-pre-compile">
+    <exec executable="${aapt}" failonerror="true">
+      <arg value="package" />
+      <arg value="-f" />
+      <!--arg value="-v" /-->
+      <arg value="-M" />
+      <arg path="${out.manifest.abs.file}" />
+      <arg value="-I" />
+      <arg path="${project.target.android.jar}" />
+      <arg value="-m" />
+      <arg value="-J" />
+      <arg path="${gen.absolute.dir}" />
+      <arg value="-S" />
+      <arg path="${resource.absolute.dir}" />
+      <arg value="--custom-package" />
+      <arg value="com.google.vr.cardboard" />
+    </exec>
+    
+  </target>
+
+  <target name="-post-package">
+    <delete dir="${resource.absolute.dir}"/>
+  </target>
+
+</project>
