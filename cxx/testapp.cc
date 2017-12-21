@@ -52,7 +52,7 @@ static void CreateGrid(Ogre::Real distance, int size,
           name << "GridCube" << x << "," << y << "," << z;
           Ogre::Entity *ent = mgr->createEntity(name.str(), mesh);
           Ogre::SceneNode *gnode = mgr->getRootSceneNode()
-            ->createChildSceneNode(Ogre::Vector3(x * distance, y * distance, z * distance));
+            ->createChildSceneNode(Ogre::Vector3(x * distance * 10, y * distance, z * distance * 10));
           gnode->attachObject(ent);
         }
 }
@@ -66,16 +66,26 @@ void OgreCardboardTestApp::setupCamera()
     });
 }
 
+#if defined(ANDROID)
 void OgreCardboardTestApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
   rgm.createResourceGroup("Terrain/Default", false);
   rgm.addResourceLocation("/terrain", "APKFileSystem", "Terrain/Default");
   rgm.addResourceLocation("/models", "APKFileSystem");
 }
-
-void OgreCardboardTestApp::initialize(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr)
+#else
+void OgreCardboardTestApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
-  OgreCardboardApp::initialize(env, androidSurface, gvr, amgr);
+  rgm.createResourceGroup("Terrain/Default", false);
+  rgm.addResourceLocation("../project/assets/terrain", "FileSystem", "Terrain/Default");
+  rgm.addResourceLocation("../project/assets/models", "FileSystem");
+}
+
+#endif
+
+void OgreCardboardTestApp::initialize()
+{
+  OgreCardboardApp::initialize();
 
   forBothCamerasAndViewports([](Ogre::Camera *c, Ogre::Viewport *vp){
     c->setPosition(Ogre::Vector3(80.0f, 80.0f, 80.0f));

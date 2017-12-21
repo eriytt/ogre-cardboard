@@ -1,0 +1,10 @@
+OBJECTS = main-linux.o testapp.o ogre-linux.o Terrain.o
+
+CXXFLAGS = -g -I/usr/include/OGRE -I/usr/include/OGRE/Terrain -I/usr/include/OGRE/RenderSystems/GL
+LDFLAGS = -L/usr/lib/x86_64-linux-gnu -lOgreMain -lOgreTerrain -lboost_system -lOIS
+
+ogreclient: $(OBJECTS)
+	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)
+
+clean:
+	rm -f $(OBJECTS) ogreclient.so

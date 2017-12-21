@@ -5,7 +5,6 @@
 #include <OgreTerrain.h>
 #include <OgreTerrainGroup.h>
 
-
 class Terrain
 {
  protected:
@@ -20,6 +19,7 @@ public:
   virtual ~Terrain();
   Ogre::AxisAlignedBox getBounds() {return  mTerrainGroup->getTerrain(0, 0)->getWorldAABB();}
   Ogre::Real getHeight(Ogre::Real x, Ogre::Real y);
+  Ogre::TerrainGroup *getTerrainGroup() {return mTerrainGroup;}
 
 protected:
   void defineTerrain(long x, long y, bool flat = false);

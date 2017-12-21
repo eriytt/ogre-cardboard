@@ -29,7 +29,7 @@ SYSTEM_CXXFLAGS = --sysroot=${ANDROID_SYSROOT} \
 OGRE_CXXFLAGS = -I$(OGRE_PATH)/OgreMain/include -I$(OGRE_PATH)/RenderSystems/GLES2/include -I$(OGRE_PATH)/Components/Terrain/include -I$(OGRE_BUILD_PATH)/include
 GVR_CXXFLAGS = -I$(GVRNDK)/include
 
-CXXFLAGS = $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) -std=c++14 -Wall -fPIC -frtti -fexceptions $(SYSTEM_CXXFLAGS) $(OGRE_CXXFLAGS) $(GVR_CXXFLAGS)
+CXXFLAGS = $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) -std=c++14 -Wall -fPIC -frtti -fexceptions $(SYSTEM_CXXFLAGS) $(OGRE_CXXFLAGS) $(GVR_CXXFLAGS) -DANDROID
 
 
 SYSTEM_LDFLAGS = --sysroot=${ANDROID_SYSROOT} \

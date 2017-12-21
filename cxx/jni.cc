@@ -20,8 +20,8 @@ JNI_METHOD(jlong, InitOgre)(JNIEnv *env, jclass clazz,
 {
   prctl(PR_SET_DUMPABLE, 1);
   AAssetManager* assetMgr = AAssetManager_fromJava(env, assetManager);
-  app = new OgreCardboardTestApp;
-  app->initialize(env, surface, reinterpret_cast<gvr_context *>(native_gvr_api), assetMgr);
+  app = new OgreCardboardTestApp(env, surface, reinterpret_cast<gvr_context *>(native_gvr_api), assetMgr);
+  app->initialize();
   //OgreClient::initOgre(env, surface, reinterpret_cast<gvr_context *>(native_gvr_api), assetMgr);
   return 0;
 }

@@ -1,4 +1,8 @@
-#include "ogre.hh"
+#if defined(ANDROID)
+#  include "ogre-android.hh"
+#else
+#  include "ogre-linux.hh"
+#endif
 
 class OgreCardboardTestApp: public OgreCardboardApp
 {
@@ -52,7 +56,13 @@ protected:
   void setupResources(Ogre::ResourceGroupManager &rgm);
 
 public:
-  void initialize(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr);
+#if defined(ANDROID)
+  OgreCardboardTestApp(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr)
+    : OgreCardboardApp(env, androidSurface, gvr, amgr) {}
+#else
+    OgreCardboardTestApp() : OgreCardboardApp() {}
+#endif
+  void initialize();
   void mainLoop();
   void handleKeyDown(int key);
   void handleKeyUp(int key);

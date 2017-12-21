@@ -1,4 +1,4 @@
-#include "ogre.hh"
+#include "ogre-android.hh"
 
 //#include <string>
 #include<sstream>
@@ -18,7 +18,7 @@
 #define LOG_INFO LOGI
 #define LOG_ERROR LOGE
 
-OgreCardboardApp::OgreCardboardApp()
+OgreCardboardApp::OgreCardboardApp(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr): OgreApp(), env(env), androidSurface(androidSurface), gvr(gvr), amgr(amgr)
 {
 }
 
@@ -30,25 +30,25 @@ std::string ToString(T val)
   return stream.str();
 }
 
-void OgreCardboardApp::initialize(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr)
+void OgreCardboardApp::initialize()
 {
     gvr_api = gvr::GvrApi::WrapNonOwned(gvr);
     gvr_api->InitializeGl();
 
     EGLDisplay display;
     if ((display = eglGetDisplay(EGL_DEFAULT_DISPLAY)) == EGL_NO_DISPLAY)
-      throw OgreCardboardAppError(std::string("eglGetDisplay() returned error ")
+      throw OgreAppError(std::string("eglGetDisplay() returned error ")
                                   + ToString(eglGetError()));
 
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);
     if (surface == EGL_NO_SURFACE)
-      throw OgreCardboardAppError("eglGetCurrentSurface(EGL_DRAW) returned error returned EGL_NO_SURFACE");
+      throw OgreAppError("eglGetCurrentSurface(EGL_DRAW) returned error returned EGL_NO_SURFACE");
 
 
     int width, height;
     if (!eglQuerySurface(display, surface, EGL_WIDTH, &width) ||
         !eglQuerySurface(display, surface, EGL_HEIGHT, &height))
-      throw OgreCardboardAppError(std::string("eglQuerySurface() returned error ")
+      throw OgreAppError(std::string("eglQuerySurface() returned error ")
                                   + ToString(eglGetError()));
 
     LOG_INFO("EGl Surface size: %dx%d", width, height);
@@ -153,6 +153,7 @@ void OgreCardboardApp::initialize(JNIEnv *env, jobject androidSurface, gvr_conte
                                           1.0f - vpUV.top,
                                           vpUV.right - vpUV.left,
                                           vpUV.top - vpUV.bottom);
+
     initialized = true;
 }
 
@@ -194,7 +195,7 @@ Ogre::Matrix4 OgreCardboardApp::PerspectiveMatrixFromView(const gvr::Rectf& fov,
 void OgreCardboardApp::renderFrame()
 {
   if (not initialized)
-    throw OgreCardboardAppError("OgreCardboardApp has not been initialized");
+    throw OgreAppError("OgreCardboardApp has not been initialized");
 
   gvr::ClockTimePoint target_time = gvr::GvrApi::GetTimePointNow();
   target_time.monotonic_system_time_nanos +=
