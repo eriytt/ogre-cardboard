@@ -94,7 +94,59 @@ and sit back and relax for a while.
 
 After a while you should se a build failure trying to build the Android JNI sample application. Ironically, this is fine, I haven't bothered to fix this because it's not needed, the libraries have been built already:
 ```
-$ $ ls lib/
+$ ls lib/
 libOgreMainStatic.a    libOgreRTShaderSystemStatic.a  libOgreVolumeStatic.a                 libPlugin_ParticleFXStatic.a
 libOgrePagingStatic.a  libOgreTerrainStatic.a         libPlugin_OctreeSceneManagerStatic.a  libRenderSystem_GLES2Static.a
 ```
+
+### Ogre Cardboard
+
+You need to edit the top level Makefile and set the variables ANDROID_SDK and ANDROID_NDK, and cxx/Makefile OGREDEPS, OGRE_PATH and OGRE_BUILD_PATH. If you followed my advice on how to place prerequisites, this is everything hat needs to be done before running:
+```
+$ make
+```
+If you didn't, there are some other variables you need to change as well. Anyway, after having run make successfully, you should have a project/bin/OgreClient-debug.apk. Connect your device and run
+```
+$ make install
+```
+then turn your device on and run
+```
+$ make run
+```
+If everything works as it should, you should see the familiar cardboard view soaring of a red/white checker landscape with some small floating cubes here and there, and a mysteriously spinning rod.
+If you have a Bluetooth keyboard, you should be able to move around some with the keys w, s, a and d.
+
+### Building a native application
+With some tweaks, notably switching render system to a native render system and defining other resource locations, the application can be run natively on the development system. Debian packages Ogre and its dependencies so all you need to do is install them. I have included native support in the cxx/Makefile.linux makefile. Build it with:
+```
+$ cd cxx && make
+```
+and run it with:
+```
+$ ./ogreclient
+```
+standing in the cxx directory.
+
+## Implementation
+### High level view
+Like any other app with native code, Ogre Cardboard has some Java boilerplate that sets up the Activity and View and creates a Renderer, where the Renderer calls native code through JNI to initialize the Cardboard and Ogre state. After everything is set, the renderer's onDrawFrame() method is called (periodically? when idle? as fast as possible?) which call the native main loop through JNI.
+
+### Setup
+A lot of the setup is taken directly from the Google VR samples. The trick is "fake" an Ogre state, and while setting this state up, don't mess with the state that Google VR already set up. This is done by setting flags to use an already existing EGL Context. Since all Google VR seem to do is setting up a special frame buffer object to render to, and viewports projection matrices for each eye, mimicing this setup in Ogre is fairly easy. The tricky part was getting Ogre to render to the GVR frame buffer object, since Ogre has no idea that this object even exist, and there was no API to inform Ogre about it. Now there is...
+
+#### Window Size
+One particular thing that I did not implement was the ability to select window (frame buffer object) size. The size is going to be whatever eglQuerySurface() returns.
+
+### Main Loop
+The main loop applies the head rotation matrix to the view matrix for both cameras. This is the last thing that happens, and Ogre::Camera::setCustomViewMatrix() is used to prevent the view matrix from being recalculated automatically by Ogre somewhere in the rendering code. This means that after all rendering is done, Ogre::Camera::setCustomViewMatrix(false) is called to reenable automatic updates of the view matrix when setting camera positions and such.
+Before doing the actual rendering, the default framebuffer object is set in Ogre, otherwise Ogre would render directly to the object that corresponds to the actual window displayed on the device screen.
+What follows is a slightly customized render sequence that makes sure that a call to swapping buffers is _not_ made. Otherwise it very similar to Ogre::Root::renderOneFrame(). The actual swapping of something to the visible screen is done by gvr::Frame::Submit().
+The main loop is not actually a loop but a function that should be called periodically.
+
+### Resources
+Most stuff in Ogre is not actual code, but rather resources like meshes, material definitions and shader programs loaded from files. Ogre has built in support for loading resources from somewhere in the APK file that is actually running. All that needs to be done is defining the locations, and this is done in OgreCardboardTestApp::setupResources() and then drop in the stuff you need under project/assets. Note that resource locations are not recursive by default.
+
+### Known Issues
+Apart from the window size issue described above, I've had problems with holes in the terrain (actually, most of the terrain is not drawn to screen). The missing terrain patches seem to occur when no other object is inside the view frustum. I have verified that this is a problem that does not occur on all devices, so I'm suspecting a driver bug. But it could just as well be some undefined behavior that I have introduced in my shader code. If you figure out what the problem is, please let me know.
+
+If an object is not explicitly assigned a material, Ogre will assign it a default material, either BaseWhite or BaseWhiteNoLighting. These materials do not have shader techniques defined, and since OpenGLES 2.0 is a shader only render system, these objects will not be visible. You must use materials that has a shader based technique. I've seen snippets that augment the default materials with such techniques, but I have not made it in this sample, instead i have created my own "myshadermaterial". This material does not work very well running on a native linux host with the OpenGL render system though, but at least it's visible.
