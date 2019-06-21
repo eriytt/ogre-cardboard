@@ -13,8 +13,8 @@
 
 class OgreCardboardApp: public OgreApp
 {
-private:
-  static Ogre::Matrix4 PerspectiveMatrixFromView(const gvr::Rectf& fov, float z_near, float z_far);
+protected:
+  static gvr::Rectf GVRFOV2FrustumExtents(gvr::Rectf& fov, float z_near);
 
 private:
   bool initialized = false;
@@ -35,6 +35,9 @@ protected:
   Ogre::Camera* rcam = nullptr;
   Ogre::Viewport* lviewport = nullptr;
   Ogre::Viewport* rviewport = nullptr;
+  gvr::Rectf lFOV;
+  gvr::Rectf rFOV;
+
 
 private:
   Ogre::RenderWindow* renderWindow = nullptr;

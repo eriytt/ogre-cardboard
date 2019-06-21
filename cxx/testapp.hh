@@ -4,15 +4,17 @@
 #  include "ogre-linux.hh"
 #endif
 
-class OgreCardboardTestApp: public OgreCardboardApp
+class OgreCardboardTestApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
 {
 private:
   const char *VertexShader =
+    "precision mediump float;\n"
+
     "varying vec4 v_Color;\n"
     "uniform mat4 u_MVP;\n"
     "attribute vec4 vertex;\n"
     // "attribute vec4 foobar;\n"
-    
+
     "void main()\n"
     "{\n"
     "	v_Color = vec4(0.0, 1.0, 0.5, 1.0) + vertex;\n"
@@ -20,8 +22,10 @@ private:
     "}\n";
 
   const char *FragmentShader =
+    "precision mediump float;\n"
+
     "varying vec4 v_Color;\n"
-    
+
     "void main()\n"
     "{\n"
     "	gl_FragColor = v_Color;\n"
@@ -48,6 +52,8 @@ private:
     "}\n";
 
   Ogre::SceneNode *mNode = nullptr;
+  Ogre::SceneNode *camNode = nullptr;
+  Ogre::SceneNode *nfNode = nullptr;
   class Terrain *terrain = nullptr;
   bool forward = false, backward = false, left = false, right = false;
   
@@ -66,4 +72,8 @@ public:
   void mainLoop();
   void handleKeyDown(int key);
   void handleKeyUp(int key);
+
+  // Ogre::RenderQueueListener
+  virtual void renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation);
+  virtual void renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &repeatThisInvocation);
 };

@@ -125,9 +125,9 @@ void OgreCardboardApp::initialize()
     // Left viewport
     gvr::BufferViewport tmp_viewport(gvr_api->CreateBufferViewport());
     viewport_list->GetBufferViewport(0, &tmp_viewport);
-    lcam->setCustomProjectionMatrix(true, PerspectiveMatrixFromView(tmp_viewport.GetSourceFov(),
-                                                                    lcam->getNearClipDistance(),
-                                                                    lcam->getFarClipDistance()));
+    lFOV = tmp_viewport.GetSourceFov();
+    auto e = GVRFOV2FrustumExtents(lFOV, lcam->getNearClipDistance());
+    lcam->setFrustumExtents(e.left, e.right, e.top, e.bottom);
     gvr::Mat4f left_eye_matrix = gvr_api->GetEyeFromHeadMatrix(GVR_LEFT_EYE);
     lcam->setFrustumOffset(left_eye_matrix.m[0][3], left_eye_matrix.m[1][3]);
 
@@ -140,9 +140,9 @@ void OgreCardboardApp::initialize()
 
     // Right viewport
     viewport_list->GetBufferViewport(1, &tmp_viewport);
-    rcam->setCustomProjectionMatrix(true, PerspectiveMatrixFromView(tmp_viewport.GetSourceFov(),
-                                                                    rcam->getNearClipDistance(),
-                                                                    rcam->getFarClipDistance()));
+    rFOV = tmp_viewport.GetSourceFov();
+    e = GVRFOV2FrustumExtents(rFOV, rcam->getNearClipDistance());
+    rcam->setFrustumExtents(e.left, e.right, e.top, e.bottom);
     gvr::Mat4f right_eye_matrix = gvr_api->GetEyeFromHeadMatrix(GVR_RIGHT_EYE);
     rcam->setFrustumOffset(right_eye_matrix.m[0][3], right_eye_matrix.m[1][3]);
 
@@ -157,40 +157,15 @@ void OgreCardboardApp::initialize()
     initialized = true;
 }
 
-
-Ogre::Matrix4 OgreCardboardApp::PerspectiveMatrixFromView(const gvr::Rectf& fov, float z_near, float z_far) {
-  Ogre::Matrix4 result;
-  const float x_left = -std::tan(fov.left * M_PI / 180.0f) * z_near;
-  const float x_right = std::tan(fov.right * M_PI / 180.0f) * z_near;
-  const float y_bottom = -std::tan(fov.bottom * M_PI / 180.0f) * z_near;
-  const float y_top = std::tan(fov.top * M_PI / 180.0f) * z_near;
-  const float zero = 0.0f;
-
-  assert(x_left < x_right && y_bottom < y_top && z_near < z_far &&
-         z_near > zero && z_far > zero);
-  const float X = (2 * z_near) / (x_right - x_left);
-  const float Y = (2 * z_near) / (y_top - y_bottom);
-  const float A = (x_right + x_left) / (x_right - x_left);
-  const float B = (y_top + y_bottom) / (y_top - y_bottom);
-  const float C = (z_near + z_far) / (z_near - z_far);
-  const float D = (2 * z_near * z_far) / (z_near - z_far);
-
-  for (int i = 0; i < 4; ++i) {
-      for (int j = 0; j < 4; ++j) {
-        result[i][j] = 0.0f;
-      }
-    }
-    result[0][0] = X;
-    result[0][2] = A;
-    result[1][1] = Y;
-    result[1][2] = B;
-    result[2][2] = C;
-    result[2][3] = D;
-    result[3][2] = -1;
-
-    return result;
-  }
-
+gvr::Rectf OgreCardboardApp::GVRFOV2FrustumExtents(gvr::Rectf& fov, float z_near)
+{
+  return  {
+    .left = static_cast<float>(-std::tan(fov.left * M_PI / 180.0f) * z_near),
+    .right = static_cast<float>(std::tan(fov.right * M_PI / 180.0f) * z_near),
+    .bottom = static_cast<float>(-std::tan(fov.bottom * M_PI / 180.0f) * z_near),
+    .top = static_cast<float>(std::tan(fov.top * M_PI / 180.0f) * z_near)
+  };
+}
 
 void OgreCardboardApp::renderFrame()
 {

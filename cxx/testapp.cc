@@ -2,31 +2,31 @@
 
 #include "Terrain.hh"
 
-static Ogre::ManualObject* createCubeMesh(Ogre::String name, Ogre::String matName)
+static Ogre::ManualObject* createCubeMesh(Ogre::String name, Ogre::String matName, Ogre::Real size = 0.5)
 {
   auto cube = OGRE_NEW Ogre::ManualObject(name);
   cube->begin(matName);
 
-  cube->position(0.5,-0.5,0.5);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,0);
-  cube->position(-0.5,-0.5, -0.5);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,1);
-  cube->position(0.5,-0.5, -0.5);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,1);
-  cube->position(-0.5,-0.5,0.5);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,0);
-  cube->position(0.5,0.5,0.5);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(1,0);
-  cube->position(-0.5,-0.5,0.5);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,1);
-  cube->position(0.5,-0.5,0.5);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,1);
-  cube->position(-0.5,0.5,0.5);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(0,0);
-  cube->position(-0.5,0.5, -0.5);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(0,1);
-  cube->position(-0.5,-0.5, -0.5);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(1,1);
-  cube->position(-0.5,-0.5,0.5);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(1,0);
-  cube->position(0.5,-0.5, -0.5);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(0,1);
-  cube->position(0.5,0.5, -0.5);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(1,1);
-  cube->position(0.5,-0.5,0.5);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(0,0);
-  cube->position(0.5,-0.5, -0.5);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,0);
-  cube->position(-0.5,-0.5, -0.5);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,0);
-  cube->position(-0.5,0.5,0.5);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(1,0);
-  cube->position(0.5,0.5, -0.5);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(0,1);
-  cube->position(-0.5,0.5, -0.5);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(1,1);
-  cube->position(0.5,0.5,0.5);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(0,0);
+  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,0);
+  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,1);
+  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,1);
+  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,0);
+  cube->position(size,size,size);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(1,0);
+  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,1);
+  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,1);
+  cube->position(-size,size,size);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(0,0);
+  cube->position(-size,size, -size);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(0,1);
+  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(1,1);
+  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(1,0);
+  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(0,1);
+  cube->position(size,size, -size);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(1,1);
+  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(0,0);
+  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,0);
+  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,0);
+  cube->position(-size,size,size);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(1,0);
+  cube->position(size,size, -size);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(0,1);
+  cube->position(-size,size, -size);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(1,1);
+  cube->position(size,size,size);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(0,0);
 
   cube->triangle(0,2,1);      cube->triangle(3,0,1);
   cube->triangle(4,6,5);      cube->triangle(4,5,7);
@@ -134,6 +134,22 @@ void OgreCardboardTestApp::initialize()
   CreateGrid(30.0, 3, sceneManager, cube_mesh);
 
   terrain = new ::Terrain(root, "Terrain/Default" /*DefaultTerrainResourceGroup*/);
+
+  camNode = sceneManager->getRootSceneNode()->createChildSceneNode();
+  camNode->setPosition(lcam->getDerivedPosition());
+
+
+  Ogre::ManualObject *small_cube = createCubeMesh("Cube", "myshadermaterial", 0.03);
+  Ogre::MeshPtr small_cube_mesh = small_cube->convertToMesh("SmallCubeMesh");
+  small_cube_mesh->_setBounds(Ogre::AxisAlignedBox(Ogre::Vector3(-10, -10, -10),
+                                                   Ogre::Vector3(10, 10, 10)));
+  Ogre::Entity *nf_ent = sceneManager->createEntity("NearFieldCube", small_cube_mesh);
+  column_ent->setMaterialName("myshadermaterial");
+  nfNode = camNode->createChildSceneNode(Ogre::Vector3(0, 0, 0.5));
+  nfNode->attachObject(nf_ent);
+  nf_ent->setRenderQueueGroup(51);
+
+  sceneManager->addRenderQueueListener(this);
 }
 
 void OgreCardboardTestApp::mainLoop()
@@ -153,6 +169,12 @@ void OgreCardboardTestApp::mainLoop()
     forBothCameras([](Ogre::Camera *cam){cam->yaw(Ogre::Radian( 0.05));});
   else if (right)
     forBothCameras([](Ogre::Camera *cam){cam->yaw(Ogre::Radian(-0.05));});
+
+  auto n = lcam->getDerivedPosition();
+  camNode->setPosition(n);
+  camNode->yaw(Ogre::Radian(0.1));
+  nfNode->yaw(Ogre::Radian(0.5));
+  nfNode->pitch(Ogre::Radian(0.05));
 
   mNode->translate(Ogre::Vector3(0.1, 0.1, 0.1));
   mNode->yaw(Ogre::Radian(0.05));
@@ -202,5 +224,40 @@ void OgreCardboardTestApp::handleKeyUp(int key)
       break;
     default:
       break;
+    }
+}
+
+void OgreCardboardTestApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation)
+{
+  if (queueGroupId == 51)
+    {
+      auto rs = root->getRenderSystem();
+      auto vp = rs->_getViewport();
+      auto cam = vp->getCamera();
+
+      cam->setNearClipDistance(0.2f);
+      cam->setFarClipDistance(5.0f);
+#if defined(ANDROID)
+      gvr::Rectf fp = OgreCardboardApp::GVRFOV2FrustumExtents(cam == lcam ? lFOV : rFOV, cam->getNearClipDistance());
+      cam->setFrustumExtents(fp.left, fp.right, fp.top, fp.bottom);
+#endif
+      rs->_setProjectionMatrix(cam->getProjectionMatrixRS());
+      vp->clear(Ogre::FrameBufferType::FBT_DEPTH);
+    }
+}
+
+void OgreCardboardTestApp::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &repeatThisInvocation)
+{
+  if (queueGroupId == 51)
+    {
+      auto rs = root->getRenderSystem();
+      auto cam = rs->_getViewport()->getCamera();
+      cam->setNearClipDistance(10.0f);
+      cam->setFarClipDistance(1000.0f);
+#if defined(ANDROID)
+      gvr::Rectf fp = OgreCardboardApp::GVRFOV2FrustumExtents(cam == lcam ? lFOV : rFOV, cam->getNearClipDistance());
+      cam->setFrustumExtents(fp.left, fp.right, fp.top, fp.bottom);
+#endif
+      root->getRenderSystem()->_setProjectionMatrix(cam->getProjectionMatrixRS());
     }
 }
